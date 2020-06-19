@@ -1,0 +1,53 @@
+@subheader """\
+from typing import List, Union
+from pyasdl.grammar import (
+    Constructor,
+    Field,
+    FieldQualifier,
+    Module,
+    Product,
+    Sum,
+    Type,
+)
+
+TypeList = List[Type]
+FieldList = List[Field]
+ConstructorList = List[Constructor]
+ProductOrSum = Union[Product, Sum]
+"""
+
+start[Module]: 'module' name=NAME NEWLINE? "{" body=definitions "}" {
+    Module(name.string, body)
+}
+
+definitions[TypeList]: 
+    | definition definitions { [definition] + definitions }
+    | definition { [definition] }
+
+definition[Type]: a=NAME "=" b=define { Type(a.string, b) }
+
+define[ProductOrSum]:
+    | sum { sum }
+    | product { product }
+
+product[Product]: a=fields attrs=attributes? { Product(a, attrs or []) }
+sum[Sum]: sum_body attrs=attributes? { Sum(sum_body, attrs or []) }
+
+sum_body[ConstructorList]:
+    | constructor !"|" { [constructor] }
+    | constructors="|".constructor+ { constructors }
+constructor[Constructor]: name=NAME fields=fields? { Constructor(name.string, fields) }
+
+attributes[FieldList]: "attributes" fields { fields }
+
+fields[FieldList]: "(" fields_body ")" { fields_body }
+fields_body[FieldList]:
+    | field !"," { [field] }
+    | fields=",".field+ { fields }
+field[Field]: type=NAME qualifier=field_qualifier? name=NAME {
+    Field(type.string, name.string, qualifier)
+}
+field_qualifier[FieldQualifier]: 
+    | "?" { FieldQualifier.OPTIONAL }
+    | "*" { FieldQualifier.SEQUENCE } 
+
