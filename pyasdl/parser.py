@@ -15,10 +15,8 @@ from pyasdl.grammar import (
     Product,
     Sum,
     Type,
-    add_comment_type,
 )
 
-add_comment_type(r"--[^\r\n]*")
 TypeList = List[Type]
 FieldList = List[Field]
 ConstructorList = List[Constructor]
@@ -67,45 +65,15 @@ class GeneratedParser(Parser):
 
     @memoize
     def definition(self) -> Optional[Type]:
-        # definition: NAME "=" define
+        # definition: NAME "=" (sum | product)
         mark = self.mark()
         cut = False
         if (
-            (a := self.name())
+            (name := self.name())
             and (literal := self.expect("="))
-            and (b := self.define())
+            and (define := self._tmp_1())
         ):
-            return Type(a.string, b)
-        self.reset(mark)
-        if cut:
-            return None
-        return None
-
-    @memoize
-    def define(self) -> Optional[ProductOrSum]:
-        # define: sum | product
-        mark = self.mark()
-        cut = False
-        if sum := self.sum():
-            return sum
-        self.reset(mark)
-        if cut:
-            return None
-        cut = False
-        if product := self.product():
-            return product
-        self.reset(mark)
-        if cut:
-            return None
-        return None
-
-    @memoize
-    def product(self) -> Optional[Product]:
-        # product: fields attributes?
-        mark = self.mark()
-        cut = False
-        if (a := self.fields()) and (attrs := self.attributes(),):
-            return Product(a, attrs or [])
+            return Type(name.string, define)
         self.reset(mark)
         if cut:
             return None
@@ -124,6 +92,18 @@ class GeneratedParser(Parser):
         return None
 
     @memoize
+    def product(self) -> Optional[Product]:
+        # product: fields attributes?
+        mark = self.mark()
+        cut = False
+        if (a := self.fields()) and (attrs := self.attributes(),):
+            return Product(a, attrs or [])
+        self.reset(mark)
+        if cut:
+            return None
+        return None
+
+    @memoize
     def sum_body(self) -> Optional[ConstructorList]:
         # sum_body: constructor !"|" | "|".constructor+
         mark = self.mark()
@@ -136,7 +116,7 @@ class GeneratedParser(Parser):
         if cut:
             return None
         cut = False
-        if constructors := self._gather_1():
+        if constructors := self._gather_2():
             return constructors
         self.reset(mark)
         if cut:
@@ -150,20 +130,6 @@ class GeneratedParser(Parser):
         cut = False
         if (name := self.name()) and (fields := self.fields(),):
             return Constructor(name.string, fields)
-        self.reset(mark)
-        if cut:
-            return None
-        return None
-
-    @memoize
-    def attributes(self) -> Optional[FieldList]:
-        # attributes: "attributes" fields
-        mark = self.mark()
-        cut = False
-        if (literal := self.expect("attributes")) and (
-            fields := self.fields()
-        ):
-            return fields
         self.reset(mark)
         if cut:
             return None
@@ -198,7 +164,7 @@ class GeneratedParser(Parser):
         if cut:
             return None
         cut = False
-        if fields := self._gather_3():
+        if fields := self._gather_4():
             return fields
         self.reset(mark)
         if cut:
@@ -240,8 +206,40 @@ class GeneratedParser(Parser):
         return None
 
     @memoize
-    def _loop0_2(self) -> Optional[Any]:
-        # _loop0_2: "|" constructor
+    def attributes(self) -> Optional[FieldList]:
+        # attributes: "attributes" fields
+        mark = self.mark()
+        cut = False
+        if (literal := self.expect("attributes")) and (
+            fields := self.fields()
+        ):
+            return fields
+        self.reset(mark)
+        if cut:
+            return None
+        return None
+
+    @memoize
+    def _tmp_1(self) -> Optional[Any]:
+        # _tmp_1: sum | product
+        mark = self.mark()
+        cut = False
+        if sum := self.sum():
+            return [sum]
+        self.reset(mark)
+        if cut:
+            return None
+        cut = False
+        if product := self.product():
+            return [product]
+        self.reset(mark)
+        if cut:
+            return None
+        return None
+
+    @memoize
+    def _loop0_3(self) -> Optional[Any]:
+        # _loop0_3: "|" constructor
         mark = self.mark()
         children = []
         cut = False
@@ -254,11 +252,11 @@ class GeneratedParser(Parser):
         return children
 
     @memoize
-    def _gather_1(self) -> Optional[Any]:
-        # _gather_1: constructor _loop0_2
+    def _gather_2(self) -> Optional[Any]:
+        # _gather_2: constructor _loop0_3
         mark = self.mark()
         cut = False
-        if (elem := self.constructor()) and (seq := self._loop0_2()):
+        if (elem := self.constructor()) and (seq := self._loop0_3()):
             return [elem] + seq
         self.reset(mark)
         if cut:
@@ -266,8 +264,8 @@ class GeneratedParser(Parser):
         return None
 
     @memoize
-    def _loop0_4(self) -> Optional[Any]:
-        # _loop0_4: "," field
+    def _loop0_5(self) -> Optional[Any]:
+        # _loop0_5: "," field
         mark = self.mark()
         children = []
         cut = False
@@ -280,13 +278,19 @@ class GeneratedParser(Parser):
         return children
 
     @memoize
-    def _gather_3(self) -> Optional[Any]:
-        # _gather_3: field _loop0_4
+    def _gather_4(self) -> Optional[Any]:
+        # _gather_4: field _loop0_5
         mark = self.mark()
         cut = False
-        if (elem := self.field()) and (seq := self._loop0_4()):
+        if (elem := self.field()) and (seq := self._loop0_5()):
             return [elem] + seq
         self.reset(mark)
         if cut:
             return None
         return None
+
+
+if __name__ == "__main__":
+    from pegen.parser import simple_parser_main
+
+    simple_parser_main(GeneratedParser)

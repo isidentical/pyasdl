@@ -1,24 +1,40 @@
 import argparse
 import io
 import re
-import tokenize
+import tokenize as _tokenize
+from functools import partial
+from typing import Callable, Iterator
 
 from pegen.tokenizer import Tokenizer
+from pyasdl.grammar import Module
 from pyasdl.parser import GeneratedParser as _ASDLParser
 
 # Since the pegen.tokenizer.Tokenizer uses .type instead of .exact_type
 # it is not trivial to change the default comment behavior. A workaround
 # way is sanitizing the input before passing it into the real parser
 
-COMMENT_PATTERN = re.compile(r"--.*?\n")
+COMMENT_PATTERN = _tokenize.Whitespace + r"--.*?\n"
+_tokenize.PseudoToken = _tokenize.Whitespace + _tokenize.group(
+    COMMENT_PATTERN,
+    _tokenize.PseudoExtras,
+    _tokenize.Number,
+    _tokenize.Funny,
+    _tokenize.ContStr,
+    _tokenize.Name,
+)
 
 
-def parse(source, *, filename="<pyasdl>"):
-    source = re.sub(COMMENT_PATTERN, str(), source)
+def tokenize(source: str) -> Iterator[_tokenize.TokenInfo]:
+    # A wrapper around tokenize.generate_tokens to pass comment tokens
+    source_buffer = io.StringIO(source)
+    for token in _tokenize.generate_tokens(source_buffer.readline):
+        if token.string.startswith("--"):
+            continue
+        yield token
 
-    buffer_ = io.StringIO(source)
-    tokengen = tokenize.generate_tokens(buffer_.readline)
-    tokenizer = Tokenizer(tokengen)
+
+def parse(source: str, *, filename: str = "<pyasdl>") -> Module:
+    tokenizer = Tokenizer(tokenize(source))
     parser = _ASDLParser(tokenizer)
     tree = parser.start()
 
@@ -27,7 +43,7 @@ def parse(source, *, filename="<pyasdl>"):
     return tree
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("file")
     options = parser.parse_args()
