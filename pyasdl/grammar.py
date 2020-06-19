@@ -62,15 +62,3 @@ class Field(Leaf):
     kind: str
     name: str
     qualifier: Optional[FieldQualifier] = None
-
-
-def add_comment_type(prefix):
-    _tokenize.EXACT_TOKEN_TYPES[prefix] = _token.COMMENT
-    _tokenize.PseudoToken = _tokenize.Whitespace + _tokenize.group(
-        re.escape(prefix),
-        _tokenize.PseudoExtras,
-        _tokenize.Number,
-        _tokenize.Funny,
-        _tokenize.ContStr,
-        _tokenize.Name,
-    )

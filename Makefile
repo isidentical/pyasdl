@@ -12,4 +12,4 @@ regen: pyasdl/parser.py
 venv:
 	python -m venv $(VENVDIR)
 	$(VENVPYTHON) -m pip install .
-	$(VENVPYTHON) -m pip install -r requirements-dev.pip
+	$(VENVPYTHON) -m pip install -r requirements.pip
