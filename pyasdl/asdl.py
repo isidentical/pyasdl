@@ -1,14 +1,13 @@
 import argparse
 import io
-import re
 import tokenize as _tokenize
-from functools import partial
-from typing import Callable, Iterator
+from typing import Iterator
 
 from pegen.tokenizer import Tokenizer
 from pyasdl.grammar import Module
 from pyasdl.parser import GeneratedParser as _ASDLParser
 
+__all__ = ["parse"]
 # Since the pegen.tokenizer.Tokenizer uses .type instead of .exact_type
 # it is not trivial to change the default comment behavior. A workaround
 # way is sanitizing the input before passing it into the real parser

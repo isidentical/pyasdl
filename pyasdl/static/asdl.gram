@@ -23,10 +23,10 @@ start[Module]: 'module' name=NAME NEWLINE? "{" body=definitions "}" {
 definitions[TypeList]: 
     | definition definitions { [definition] + definitions }
     | definition { [definition] }
-definition[Type]: name=NAME "=" define = ( sum | product) { Type(name.string, define) }
-
-sum[Sum]: sum_body attrs=attributes? { Sum(sum_body, attrs or []) }
-product[Product]: a=fields attrs=attributes? { Product(a, attrs or []) }
+definition[Type]: name=NAME "=" define { Type(name.string, define) }
+define[ProductOrSum]:
+    | sum_body attrs=attributes? { Sum(sum_body, attrs or []) }
+    | fields attrs=attributes? { Product(fields, attrs or []) }
 
 sum_body[ConstructorList]:
     | constructor !"|" { [constructor] }

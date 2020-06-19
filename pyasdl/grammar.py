@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import re
-import token as _token
-import tokenize as _tokenize
-from dataclasses import dataclass, field
+import dataclasses
+from dataclasses import dataclass
 from enum import Enum, auto
 
 
@@ -34,13 +32,13 @@ class Type(Node):
 @dataclass
 class Sum(Node):
     types: List[Constructor]
-    attributes: List[Field] = field(default_factory=list)
+    attributes: List[Field] = dataclasses.field(default_factory=list)
 
 
 @dataclass
 class Product(Node):
     fields: List[Field]
-    attributes: List[Field] = field(default_factory=list)
+    attributes: List[Field] = dataclasses.field(default_factory=list)
 
 
 @dataclass
@@ -62,3 +60,29 @@ class Field(Leaf):
     kind: str
     name: str
     qualifier: Optional[FieldQualifier] = None
+
+
+class ASDLVisitor:
+    def visit(self, node: AST) -> None:
+        if visitor := getattr(self, f"visit_{type(node).__name__}", None):
+            visitor(node)
+        else:
+            self.generic_visit(node)
+
+    def generic_visit(self, node: AST) -> None:
+        def traverse(node):
+            if isinstance(node, AST):
+                self.visit(node)
+
+        if not dataclasses.is_dataclass(node):
+            return None
+
+        # vars() preffered over dataclasses.asdict since it
+        # recursively converts all values to dict instead of
+        # only the give node.
+        for field, value in vars(node).items():
+            if isinstance(value, list):
+                for item in value:
+                    traverse(item)
+            else:
+                traverse(value)
