@@ -5,7 +5,12 @@ A new ASDL parser for Zephyr's ASDL format.
 ## Usage
 
 ```py
-from pyasdl import asdl
+import pyasdl
 
-asdl.parse(<asdl source>)
+pyasdl.parse(<asdl source>)
+
+class TestVisitor(pyasdl.ASDLVisitor):
+    def visit_Module(self, node):
+        print(f"Module name: {node.name}")
+        self.generic_visit(node)
 ```
