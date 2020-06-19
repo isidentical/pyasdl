@@ -1,0 +1,3 @@
+module Test {
+    suite2 = (a b)
+}

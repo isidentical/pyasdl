@@ -33,7 +33,7 @@ sum_body[ConstructorList]:
     | constructors="|".constructor+ { constructors }
 constructor[Constructor]: name=NAME fields=fields? { Constructor(name.string, fields) }
 
-fields[FieldList]: "(" fields_body ")" { fields_body }
+fields[FieldList]: "(" body=fields_body? ")" { body }
 fields_body[FieldList]:
     | field !"," { [field] }
     | fields=",".field+ { fields }

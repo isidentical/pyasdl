@@ -129,15 +129,15 @@ class GeneratedParser(Parser):
 
     @memoize
     def fields(self) -> Optional[FieldList]:
-        # fields: "(" fields_body ")"
+        # fields: "(" fields_body? ")"
         mark = self.mark()
         cut = False
         if (
             (literal := self.expect("("))
-            and (fields_body := self.fields_body())
+            and (body := self.fields_body(),)
             and (literal_1 := self.expect(")"))
         ):
-            return fields_body
+            return body
         self.reset(mark)
         if cut:
             return None
