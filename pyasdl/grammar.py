@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import List, Optional, Union
 
 
 class AST:
@@ -26,7 +27,7 @@ class Module(Node):
 @dataclass
 class Type(Node):
     name: str
-    value: Node
+    value: Union[Sum, Product]
 
 
 @dataclass
@@ -65,24 +66,23 @@ class Field(Leaf):
 class ASDLVisitor:
     def visit(self, node: AST) -> None:
         if visitor := getattr(self, f"visit_{type(node).__name__}", None):
-            visitor(node)
+            return visitor(node)
         else:
-            self.generic_visit(node)
+            return self.generic_visit(node)
 
     def generic_visit(self, node: AST) -> None:
         def traverse(node):
             if isinstance(node, AST):
                 self.visit(node)
 
-        if not dataclasses.is_dataclass(node):
-            return None
-
         # vars() preffered over dataclasses.asdict since it
         # recursively converts all values to dict instead of
         # only the give node.
+        assert dataclasses.is_dataclass(node)
         for field, value in vars(node).items():
             if isinstance(value, list):
                 for item in value:
                     traverse(item)
             else:
                 traverse(value)
+        return node
