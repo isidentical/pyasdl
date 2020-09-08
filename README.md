@@ -8,15 +8,36 @@ the stub generator example. Basically it generates a typing stub for
 the AST module itself (when the Python's ASDL is given) in a straight
 forward way.
 
-## Usage
+## Reference
+- `parse(source: str, *, filename: str = "<pyasdl>") -> Module`
+    Takes the source code (and optionally the filename, to be used in
+    syntax errors) and outputs an `pyasdl.Module` instance that
+    represents the AST of the given ASDL schema.
 
-```py
-import pyasdl
+- `ASDLVisitor`
+    A base class to be used with `visitor-pattern` applications. The
+    interface is similiar with the `ast.NodeVisitor`.
+    
+    ```py
+    import pyasdl as asdl
 
-pyasdl.parse(<asdl source>)
+    class CollectNamesVisitor(asdl.ASDLVisitor):
+        def __init__(self):
+            self.names = set()
 
-class TestVisitor(pyasdl.ASDLVisitor):
-    def visit_Module(self, node):
-        print(f"Module name: {node.name}")
-        self.generic_visit(node)
-```
+        def visit_Module(self, node: asdl.Module) -> None:
+            self.names.add(node.name)
+
+    visitor = DummyVisitor()
+    for source in sources:
+        tree = asdl.parse(source)
+        visitor.visit(tree)
+    print(visitor.names)
+    ```
+
+- `Module`
+- `Type`
+- `Sum`
+- `Constructor`
+- `FieldQualifier`
+- `Field`

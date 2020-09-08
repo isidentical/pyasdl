@@ -45,19 +45,22 @@ class TestVisitor(pyasdl.ASDLVisitor):
         return ast.Module(body=self._BOOTSTRAP + body, type_ignores=[])
 
     def visit_Type(self, node: pyasdl.Type) -> Iterator[ast.ClassDef]:
-        attributes = list(map(self.visit, node.value.attributes))
+        attributes = self.visit_all(node.value.attributes)
 
         if isinstance(node.value, pyasdl.Sum):
             yield self._create_type(node.name, "AST", attributes)
             for constructor in node.value.types:
-                body = list(map(self.visit, constructor.fields or ()))
-                yield self._create_type(constructor.name, node.name, body)
+                yield self._create_type(
+                    constructor.name,
+                    node.name,
+                    self.visit_all(constructor.fields or ()),
+                )
 
         elif isinstance(node.value, pyasdl.Product):
             yield self._create_type(
                 node.name,
                 "AST",
-                [*map(self.visit, node.value.fields), *attributes],
+                [*self.visit_all(node.value.fields), *attributes],
             )
         else:
             raise TypeError(
