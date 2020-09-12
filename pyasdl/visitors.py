@@ -8,14 +8,14 @@ VisitorType = Callable[["ASDLVisitor", AST], Any]
 
 
 class ASDLVisitor:
-    def visit(self, node: AST) -> Any:
+    def visit(self, node: AST, *args, **kwargs) -> Any:
         visitor = self.find_visitor(type(node).__name__)
-        return visitor(node)
+        return visitor(node, *args, **kwargs)
 
-    def visit_all(self, nodes: List[AST]) -> List[Any]:
-        return [self.visit(node) for node in nodes]
+    def visit_all(self, nodes: List[AST], *args, **kwags) -> List[Any]:
+        return [self.visit(node, *args, **kwags) for node in nodes]
 
-    def generic_visit(self, node: AST) -> AST:
+    def generic_visit(self, node: AST, *args, **kwags) -> AST:
         for value in vars(node).values():
             if isinstance(value, AST):
                 self.visit(value)
