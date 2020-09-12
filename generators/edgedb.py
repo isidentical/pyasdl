@@ -9,7 +9,7 @@ import pyasdl
 
 DEFAULT_INDENT = " " * 4
 EDGEQL_BASICS = {
-    "int": "bigint",
+    "int": "int64",
     "string": "str",
     "identifier": "str",
     "constant": "str",
@@ -101,6 +101,9 @@ class QLModel:
             lines[-1] = self.constraint.value + " " + lines[-1]
         if self.extending is not None:
             lines[-1] += " extending " + self.extending
+            if "enum" not in self.extending:
+                lines[-1] += ", AST"
+
         lines[-1] += " " + "{"
         lines.extend(DEFAULT_INDENT + str(field) for field in self.fields)
         if len(lines) == 1:
@@ -125,7 +128,7 @@ def as_enum(names):
 class GraphQLGenerator(pyasdl.ASDLVisitor):
     def visit_Module(self, node):
         self.enums = set()
-        definitions = []
+        definitions = [QLModel("AST", constraint=ModelConstraint.ABSTRACT)]
         for definition in node.body:
             definitions.extend(self.visit(definition))
         yield from self.fix_references(definitions)
@@ -184,7 +187,7 @@ def main():
 
     visitor = GraphQLGenerator()
     print("START MIGRATION TO {")
-    print(DEFAULT_INDENT + "module default {")
+    print(DEFAULT_INDENT + "module ast {")
     for ql_type in visitor.visit(tree):
         print(textwrap.indent(str(ql_type), DEFAULT_INDENT * 2))
     print(DEFAULT_INDENT + "}")

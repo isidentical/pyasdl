@@ -1,25 +1,26 @@
 START MIGRATION TO {
-    module default {
+    module ast {
+        abstract type AST {}
         abstract type mod {}
-        type PyModule extending mod {
+        type PyModule extending mod, AST {
             multi link body -> stmt;
             multi link type_ignores -> type_ignore;
         }
-        type Interactive extending mod {
+        type Interactive extending mod, AST {
             multi link body -> stmt;
         }
-        type Expression extending mod {
+        type Expression extending mod, AST {
             required link body -> expr;
         }
-        type FunctionType extending mod {
+        type FunctionType extending mod, AST {
             multi link argtypes -> expr;
             required link returns -> expr;
         }
-        type Suite extending mod {
+        type Suite extending mod, AST {
             multi link body -> stmt;
         }
         abstract type stmt {}
-        type FunctionDef extending stmt {
+        type FunctionDef extending stmt, AST {
             required property name -> str;
             required link args -> arguments;
             multi link body -> stmt;
@@ -27,7 +28,7 @@ START MIGRATION TO {
             link returns -> expr;
             property type_comment -> str;
         }
-        type AsyncFunctionDef extending stmt {
+        type AsyncFunctionDef extending stmt, AST {
             required property name -> str;
             required link args -> arguments;
             multi link body -> stmt;
@@ -35,222 +36,222 @@ START MIGRATION TO {
             link returns -> expr;
             property type_comment -> str;
         }
-        type ClassDef extending stmt {
+        type ClassDef extending stmt, AST {
             required property name -> str;
             multi link bases -> expr;
             multi link keywords -> keyword;
             multi link body -> stmt;
             multi link decorator_list -> expr;
         }
-        type Return extending stmt {
+        type Return extending stmt, AST {
             link value -> expr;
         }
-        type PyDelete extending stmt {
+        type PyDelete extending stmt, AST {
             multi link targets -> expr;
         }
-        type Assign extending stmt {
+        type Assign extending stmt, AST {
             multi link targets -> expr;
             required link value -> expr;
             property type_comment -> str;
         }
-        type AugAssign extending stmt {
+        type AugAssign extending stmt, AST {
             required link target -> expr;
             required property op -> operator;
             required link value -> expr;
         }
-        type AnnAssign extending stmt {
+        type AnnAssign extending stmt, AST {
             required link target -> expr;
             required link annotation -> expr;
             link value -> expr;
-            required property simple -> bigint;
+            required property simple -> int64;
         }
-        type PyFor extending stmt {
+        type PyFor extending stmt, AST {
             required link target -> expr;
             required link iter -> expr;
             multi link body -> stmt;
             multi link orelse -> stmt;
             property type_comment -> str;
         }
-        type AsyncFor extending stmt {
+        type AsyncFor extending stmt, AST {
             required link target -> expr;
             required link iter -> expr;
             multi link body -> stmt;
             multi link orelse -> stmt;
             property type_comment -> str;
         }
-        type While extending stmt {
+        type While extending stmt, AST {
             required link test -> expr;
             multi link body -> stmt;
             multi link orelse -> stmt;
         }
-        type PyIf extending stmt {
+        type PyIf extending stmt, AST {
             required link test -> expr;
             multi link body -> stmt;
             multi link orelse -> stmt;
         }
-        type PyWith extending stmt {
+        type PyWith extending stmt, AST {
             multi link items -> withitem;
             multi link body -> stmt;
             property type_comment -> str;
         }
-        type AsyncWith extending stmt {
+        type AsyncWith extending stmt, AST {
             multi link items -> withitem;
             multi link body -> stmt;
             property type_comment -> str;
         }
-        type PyRaise extending stmt {
+        type PyRaise extending stmt, AST {
             link exc -> expr;
             link cause -> expr;
         }
-        type Try extending stmt {
+        type Try extending stmt, AST {
             multi link body -> stmt;
             multi link handlers -> excepthandler;
             multi link orelse -> stmt;
             multi link finalbody -> stmt;
         }
-        type Assert extending stmt {
+        type Assert extending stmt, AST {
             required link test -> expr;
             link msg -> expr;
         }
-        type PyImport extending stmt {
+        type PyImport extending stmt, AST {
             multi link names -> alias;
         }
-        type ImportFrom extending stmt {
+        type ImportFrom extending stmt, AST {
             property py_module -> str;
             multi link names -> alias;
-            property level -> bigint;
+            property level -> int64;
         }
-        type PyGlobal extending stmt {
+        type PyGlobal extending stmt, AST {
             multi property names -> str;
         }
-        type Nonlocal extending stmt {
+        type Nonlocal extending stmt, AST {
             multi property names -> str;
         }
-        type Expr extending stmt {
+        type Expr extending stmt, AST {
             required link value -> expr;
         }
-        type Pass extending stmt {}
-        type Break extending stmt {}
-        type Continue extending stmt {}
+        type Pass extending stmt, AST {}
+        type Break extending stmt, AST {}
+        type Continue extending stmt, AST {}
         abstract type expr {}
-        type BoolOp extending expr {
+        type BoolOp extending expr, AST {
             required property op -> boolop;
             multi link values -> expr;
         }
-        type NamedExpr extending expr {
+        type NamedExpr extending expr, AST {
             required link target -> expr;
             required link value -> expr;
         }
-        type BinOp extending expr {
+        type BinOp extending expr, AST {
             required link left -> expr;
             required property op -> operator;
             required link right -> expr;
         }
-        type UnaryOp extending expr {
+        type UnaryOp extending expr, AST {
             required property op -> unaryop;
             required link operand -> expr;
         }
-        type Lambda extending expr {
+        type Lambda extending expr, AST {
             required link args -> arguments;
             required link body -> expr;
         }
-        type IfExp extending expr {
+        type IfExp extending expr, AST {
             required link test -> expr;
             required link body -> expr;
             required link orelse -> expr;
         }
-        type Dict extending expr {
+        type Dict extending expr, AST {
             multi link keys -> expr;
             multi link values -> expr;
         }
-        type PySet extending expr {
+        type PySet extending expr, AST {
             multi link elts -> expr;
         }
-        type ListComp extending expr {
+        type ListComp extending expr, AST {
             required link elt -> expr;
             multi link generators -> comprehension;
         }
-        type SetComp extending expr {
+        type SetComp extending expr, AST {
             required link elt -> expr;
             multi link generators -> comprehension;
         }
-        type DictComp extending expr {
+        type DictComp extending expr, AST {
             required link key -> expr;
             required link value -> expr;
             multi link generators -> comprehension;
         }
-        type GeneratorExp extending expr {
+        type GeneratorExp extending expr, AST {
             required link elt -> expr;
             multi link generators -> comprehension;
         }
-        type Await extending expr {
+        type Await extending expr, AST {
             required link value -> expr;
         }
-        type Yield extending expr {
+        type Yield extending expr, AST {
             link value -> expr;
         }
-        type YieldFrom extending expr {
+        type YieldFrom extending expr, AST {
             required link value -> expr;
         }
-        type Compare extending expr {
+        type Compare extending expr, AST {
             required link left -> expr;
             multi property ops -> cmpop;
             multi link comparators -> expr;
         }
-        type Call extending expr {
+        type Call extending expr, AST {
             required link func -> expr;
             multi link args -> expr;
             multi link keywords -> keyword;
         }
-        type FormattedValue extending expr {
+        type FormattedValue extending expr, AST {
             required link value -> expr;
-            property conversion -> bigint;
+            property conversion -> int64;
             link format_spec -> expr;
         }
-        type JoinedStr extending expr {
+        type JoinedStr extending expr, AST {
             multi link values -> expr;
         }
-        type Constant extending expr {
+        type Constant extending expr, AST {
             required property value -> str;
             property kind -> str;
         }
-        type Attribute extending expr {
+        type Attribute extending expr, AST {
             required link value -> expr;
             required property attr -> str;
             required property ctx -> expr_context;
         }
-        type Subscript extending expr {
+        type Subscript extending expr, AST {
             required link value -> expr;
             required link slice -> slice;
             required property ctx -> expr_context;
         }
-        type Starred extending expr {
+        type Starred extending expr, AST {
             required link value -> expr;
             required property ctx -> expr_context;
         }
-        type Name extending expr {
+        type Name extending expr, AST {
             required property py_id -> str;
             required property ctx -> expr_context;
         }
-        type List extending expr {
+        type List extending expr, AST {
             multi link elts -> expr;
             required property ctx -> expr_context;
         }
-        type Tuple extending expr {
+        type Tuple extending expr, AST {
             multi link elts -> expr;
             required property ctx -> expr_context;
         }
         scalar type expr_context extending enum<'Load', 'Store', 'Del', 'AugLoad', 'AugStore', 'Param'> {}
         abstract type slice {}
-        type Slice extending slice {
+        type Slice extending slice, AST {
             link lower -> expr;
             link upper -> expr;
             link step -> expr;
         }
-        type ExtSlice extending slice {
+        type ExtSlice extending slice, AST {
             multi link dims -> slice;
         }
-        type Index extending slice {
+        type Index extending slice, AST {
             required link value -> expr;
         }
         scalar type boolop extending enum<'And', 'Or'> {}
@@ -261,10 +262,10 @@ START MIGRATION TO {
             required link target -> expr;
             required link iter -> expr;
             multi link ifs -> expr;
-            required property is_async -> bigint;
+            required property is_async -> int64;
         }
         abstract type excepthandler {}
-        type ExceptHandler extending excepthandler {
+        type ExceptHandler extending excepthandler, AST {
             link type -> expr;
             property name -> str;
             multi link body -> stmt;
@@ -296,8 +297,8 @@ START MIGRATION TO {
             link optional_vars -> expr;
         }
         abstract type type_ignore {}
-        type TypeIgnore extending type_ignore {
-            required property lineno -> bigint;
+        type TypeIgnore extending type_ignore, AST {
+            required property lineno -> int64;
             required property tag -> str;
         }
     }
