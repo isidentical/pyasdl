@@ -192,9 +192,6 @@ def main():
         print(textwrap.indent(str(ql_type), DEFAULT_INDENT * 2))
     print(DEFAULT_INDENT + "}")
     print("};")
-    print("POPULATE MIGRATION;")
-    print("COMMIT MIGRATION;")
-
 
 if __name__ == "__main__":
     main()
