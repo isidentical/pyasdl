@@ -5,7 +5,6 @@
 from typing import Any, List, Optional, Union
 
 from pegen.parser import Parser, memoize
-
 from pyasdl.grammar import (
     Constructor,
     Field,

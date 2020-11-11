@@ -193,5 +193,6 @@ def main():
     print(DEFAULT_INDENT + "}")
     print("};")
 
+
 if __name__ == "__main__":
     main()
