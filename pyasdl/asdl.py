@@ -4,11 +4,10 @@ import tokenize as _tokenize
 from typing import Iterator
 
 from pegen.tokenizer import Tokenizer
-
 from pyasdl.grammar import Module
 from pyasdl.parser import GeneratedParser as _ASDLParser
 
-__all__ = ["parse"]
+__all__ = ["parse", "fetch_comments"]
 # Since the pegen.tokenizer.Tokenizer uses .type instead of .exact_type
 # it is not trivial to change the default comment behavior. A workaround
 # way is sanitizing the input before passing it into the real parser
@@ -24,11 +23,13 @@ _tokenize.PseudoToken = _tokenize.Whitespace + _tokenize.group(
 )
 
 
-def tokenize(source: str) -> Iterator[_tokenize.TokenInfo]:
+def tokenize(
+    source: str, ignore_comments: bool = True
+) -> Iterator[_tokenize.TokenInfo]:
     # A wrapper around tokenize.generate_tokens to pass comment tokens
     source_buffer = io.StringIO(source)
     for token in _tokenize.generate_tokens(source_buffer.readline):
-        if token.string.startswith("--"):
+        if token.string.startswith("--") and ignore_comments:
             continue
         yield token
 
@@ -41,6 +42,12 @@ def parse(source: str, *, filename: str = "<pyasdl>") -> Module:
     if tree is None:
         raise parser.make_syntax_error(filename)
     return tree
+
+
+def fetch_comments(source: str):
+    for token in tokenize(source, ignore_comments=False):
+        if token.string.startswith("--"):
+            yield token.string[2:]
 
 
 def main() -> None:
