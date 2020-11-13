@@ -31,7 +31,7 @@ define[ProductOrSum]:
 sum_body[ConstructorList]:
     | constructor !"|" { [constructor] }
     | constructors="|".constructor+ { constructors }
-constructor[Constructor]: name=NAME fields=fields? { Constructor(name.string, fields) }
+constructor[Constructor]: name=NAME fields=fields? { Constructor(name.string, fields or []) }
 
 fields[FieldList]: "(" body=fields_body? ")" { body }
 fields_body[FieldList]:

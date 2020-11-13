@@ -121,7 +121,7 @@ class GeneratedParser(Parser):
         mark = self.mark()
         cut = False
         if (name := self.name()) and (fields := self.fields(),):
-            return Constructor(name.string, fields)
+            return Constructor(name.string, fields or [])
         self.reset(mark)
         if cut:
             return None

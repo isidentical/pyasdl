@@ -4,10 +4,10 @@ import tokenize as _tokenize
 from typing import Iterator
 
 from pegen.tokenizer import Tokenizer
-from pyasdl.grammar import Module
+from pyasdl.grammar import Module, Sum
 from pyasdl.parser import GeneratedParser as _ASDLParser
 
-__all__ = ["parse", "fetch_comments"]
+__all__ = ["parse", "fetch_comments", "is_simple_sum"]
 # Since the pegen.tokenizer.Tokenizer uses .type instead of .exact_type
 # it is not trivial to change the default comment behavior. A workaround
 # way is sanitizing the input before passing it into the real parser
@@ -48,6 +48,14 @@ def fetch_comments(source: str):
     for token in tokenize(source, ignore_comments=False):
         if token.string.startswith("--"):
             yield token.string[2:]
+
+
+def is_simple_sum(node):
+    assert isinstance(node, Sum)
+    return (
+        all(len(constructor.fields) == 0 for constructor in node.types)
+        and len(node.attributes) == 0
+    )
 
 
 def main() -> None:

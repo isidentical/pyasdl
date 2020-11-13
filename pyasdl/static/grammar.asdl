@@ -1,0 +1,11 @@
+module PyASDL {
+    Module = (string name, Type* body)
+    Type = (string name, type value)
+
+    type = Sum(Constructor* types, field* attributes)
+         | Product(field* fields, field* attributes)
+
+    Constructor = (string name, field* fields)
+    Field = (string kind, string name, field_qualifier? qualifier)
+    FieldQualifier = OPTIONAL | SEQUENCE
+}
