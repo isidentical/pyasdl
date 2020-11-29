@@ -3,7 +3,7 @@ import io
 import tokenize as _tokenize
 from typing import Iterator
 
-from pegen.tokenizer import Tokenizer
+from pyasdl.__pegen.tokenizer import Tokenizer
 from pyasdl.grammar import Module, Sum
 from pyasdl.parser import GeneratedParser as _ASDLParser
 

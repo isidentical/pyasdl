@@ -58,7 +58,7 @@ import traceback
 from abc import abstractmethod
 from typing import Any, Callable, Dict, Optional, Tuple, Type, TypeVar, cast
 
-from pegen.tokenizer import Mark, Tokenizer, exact_token_types
+from pyasdl.__pegen.tokenizer import Mark, Tokenizer, exact_token_types
 
 T = TypeVar("T")
 P = TypeVar("P", bound="Parser")
