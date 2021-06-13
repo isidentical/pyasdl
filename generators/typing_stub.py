@@ -196,7 +196,7 @@ def unmarshal_top_level_versions(guarded_node):
         ):
             original_class.body[index] = item.body[0]
 
-    return unmarshall_low_level_versions(original_class)
+    return unmarshal_low_level_versions(original_class)
 
 
 def generate_stubs(asdls):
