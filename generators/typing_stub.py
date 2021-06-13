@@ -151,7 +151,7 @@ def generate_guard(
         raise ValueError(f"Unexpected version chain: {versions}")
 
 
-def unmarshall_low_level_versions(node):
+def unmarshal_low_level_versions(node):
     previous_condition = _DUMMY_CONDITION
     for item in node.body.copy():
         if (
@@ -167,7 +167,7 @@ def unmarshall_low_level_versions(node):
             previous_condition = _DUMMY_CONDITION
 
 
-def unmarshall_top_level_versions(guarded_node):
+def unmarshal_top_level_versions(guarded_node):
     # This code will remove reduntant conditions
     # when the class is already protected by the same
     # condition. E.g:
@@ -186,7 +186,7 @@ def unmarshall_top_level_versions(guarded_node):
     #           bar: str
 
     if not isinstance(guarded_node, ast.If):
-        return unmarshall_low_level_versions(guarded_node)
+        return unmarshal_low_level_versions(guarded_node)
 
     assert isinstance(guarded_node.body[0], ast.ClassDef)
     original_class = guarded_node.body[0]
@@ -196,7 +196,7 @@ def unmarshall_top_level_versions(guarded_node):
         ):
             original_class.body[index] = item.body[0]
 
-    unmarshall_low_level_versions(original_class)
+    return unmarshall_low_level_versions(original_class)
 
 
 def generate_stubs(asdls):
@@ -250,11 +250,11 @@ def generate_stubs(asdls):
             latest_stub.bases = [base_name]
 
         latest_stub = _guard_generator(latest_stub, all_stub_versions)
-        unmarshall_top_level_versions(latest_stub)
+        unmarshal_top_level_versions(latest_stub)
         body.append(latest_stub)
 
     module = ast.Module(body, type_ignores=[])
-    unmarshall_low_level_versions(module)
+    unmarshal_low_level_versions(module)
     return module
 
 
