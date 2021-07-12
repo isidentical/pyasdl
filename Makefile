@@ -8,6 +8,7 @@ regen: pyasdl/parser.py pyasdl/grammar.py
 	# parser type to generate (c or python) but for now
 	# the version on PyPI doesn't require it.
 	$(VENVPYTHON) -m pegen -q pyasdl/static/asdl.gram -o pyasdl/parser.py
+	sed -i 's/pegen/pyasdl.__pegen/g' pyasdl/parser.py
 	$(VENVPYTHON) generators/python.py --with-defaults pyasdl/static/grammar.asdl -o pyasdl/grammar.py
 
 venv:
