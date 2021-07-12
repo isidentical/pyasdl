@@ -143,11 +143,13 @@ def main():
             "from dataclasses import dataclass as _dataclass, field as _field\n"
         )
         stream.write("identifier = str\n")
-        stream.write("string = typing.AnyStr\n")
+        stream.write(
+            "string = typing.Union[str, bytes] # Can't use AnyStr before PEP 613 is supported\n"
+        )
         stream.write(
             textwrap.dedent(
                 """\
-        constant = typing.Union[
+        constant = typing.Union[ # type: ignore
             str,
             bytes,
             # strings
@@ -161,7 +163,7 @@ def main():
             frozenset,
             # sequences
             None,
-            type(Ellipsis)
+            type(Ellipsis) # type: ignore
             # singletons
         ]\n
         """

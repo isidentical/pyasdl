@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Callable, List
+from typing import Any, List, cast
 
 from pyasdl.grammar import AST
 
-VisitorType = Callable[["ASDLVisitor", AST], Any]
+
+class Visitor:
+    def __call__(self, node: AST, *args, **kwargs) -> Any:
+        ...
 
 
 class ASDLVisitor:
@@ -23,9 +26,10 @@ class ASDLVisitor:
                 self.visit_all(value)
         return node
 
-    def find_visitor(self, name: str) -> VisitorType:
+    def find_visitor(self, name: str) -> Visitor:
         visitor = f"visit_{name}"
         if hasattr(self, visitor):
-            return getattr(self, visitor)
+            func = getattr(self, visitor)
         else:
-            return self.generic_visit
+            func = self.generic_visit
+        return cast(Visitor, func)

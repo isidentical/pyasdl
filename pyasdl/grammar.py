@@ -9,8 +9,10 @@ from enum import Enum as _Enum
 from enum import auto as _auto
 
 identifier = str
-string = typing.AnyStr
-constant = typing.Union[
+string = typing.Union[
+    str, bytes
+]  # Can't use AnyStr before PEP 613 is supported
+constant = typing.Union[  # type: ignore
     str,
     bytes,
     # strings
@@ -24,7 +26,7 @@ constant = typing.Union[
     frozenset,
     # sequences
     None,
-    type(Ellipsis)
+    type(Ellipsis)  # type: ignore
     # singletons
 ]
 
@@ -52,26 +54,26 @@ class type(AST):
 @_dataclass
 class Sum(type):
     types: typing.List[Constructor] = _field(default_factory=list)
-    attributes: typing.List[field] = _field(default_factory=list)
+    attributes: typing.List[Field] = _field(default_factory=list)
 
 
 @_dataclass
 class Product(type):
-    fields: typing.List[field] = _field(default_factory=list)
-    attributes: typing.List[field] = _field(default_factory=list)
+    fields: typing.List[Field] = _field(default_factory=list)
+    attributes: typing.List[Field] = _field(default_factory=list)
 
 
 @_dataclass
 class Constructor(AST):
     name: string
-    fields: typing.List[field] = _field(default_factory=list)
+    fields: typing.List[Field] = _field(default_factory=list)
 
 
 @_dataclass
 class Field(AST):
     kind: string
     name: string
-    qualifier: typing.Optional[field_qualifier] = _field(default=None)
+    qualifier: typing.Optional[FieldQualifier] = _field(default=None)
 
 
 class FieldQualifier(_Enum):

@@ -44,14 +44,13 @@ def parse(source: str, *, filename: str = "<pyasdl>") -> Module:
     return tree
 
 
-def fetch_comments(source: str):
+def fetch_comments(source: str) -> Iterator[str]:
     for token in tokenize(source, ignore_comments=False):
         if token.string.startswith("--"):
             yield token.string[2:]
 
 
-def is_simple_sum(node):
-    assert isinstance(node, Sum)
+def is_simple_sum(node: Sum) -> bool:
     return (
         all(len(constructor.fields) == 0 for constructor in node.types)
         and len(node.attributes) == 0
