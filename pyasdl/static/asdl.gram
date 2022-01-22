@@ -45,4 +45,4 @@ field_qualifier[FieldQualifier]:
     | "?" { FieldQualifier.OPTIONAL }
     | "*" { FieldQualifier.SEQUENCE } 
 
-attributes[FieldList]: "attributes" fields { fields }
+attributes[FieldList]: 'attributes' fields { fields }
