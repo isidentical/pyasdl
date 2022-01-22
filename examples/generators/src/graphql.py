@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pyasdl
 

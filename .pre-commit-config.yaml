@@ -1,5 +1,8 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+
+exclude: '^examples/'
+
 repos:
 -   repo: https://github.com/myint/autoflake
     rev: v1.4
@@ -10,7 +13,6 @@ repos:
     rev: 21.6b0
     hooks:
     -   id: black
-        exclude: '^tests/cosmetic/'
 -   repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.9.2
     hooks:
