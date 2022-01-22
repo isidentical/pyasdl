@@ -36,6 +36,9 @@ def tokenize(
 
 
 def parse(source: str, *, filename: str = "<pyasdl>") -> Module:
+    """Parse the given `source` string, and return
+    the AST in the shape of an `pyasdl.Module`."""
+
     tokenizer = Tokenizer(tokenize(source))
     parser = _ASDLParser(tokenizer)
     tree = parser.start()
@@ -46,12 +49,16 @@ def parse(source: str, *, filename: str = "<pyasdl>") -> Module:
 
 
 def fetch_comments(source: str) -> Iterator[str]:
+    """Return an iterator of the ASDL comments in the
+    given `source` string."""
     for token in tokenize(source, ignore_comments=False):
         if token.string.startswith("--"):
             yield token.string[2:]
 
 
 def is_simple_sum(node: Sum) -> bool:
+    """Check whether if the given `node`'s
+    all children lack any fields."""
     return (
         all(len(constructor.fields) == 0 for constructor in node.types)
         and len(node.attributes) == 0
