@@ -25,7 +25,7 @@ ProductOrSum = Union[Product, Sum]
 class GeneratedParser(Parser):
     @memoize
     def start(self) -> Optional[Module]:
-        # start: 'module' NAME NEWLINE? "{" definitions "}"
+        # start: "module" NAME NEWLINE? "{" definitions "}"
         mark = self._mark()
         if (
             (literal := self.expect("module"))
@@ -208,8 +208,8 @@ class GeneratedParser(Parser):
         self._reset(mark)
         return None
 
-    KEYWORDS = ("module",)
-    SOFT_KEYWORDS = ("attributes",)
+    KEYWORDS = ()
+    SOFT_KEYWORDS = ("attributes", "module")
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 A yet another implementation for [Zephyr ASDL](https://www.cs.princeton.edu/~appel/papers/asdl97.pdf) format.
 
 ## API
+
 ### `parse(source: str, *, filename: str = "<pyasdl>") -> Module`
 
 Parse the given `source` string, and return the AST in the shape of an `pyasdl.Module`. The
@@ -17,9 +18,10 @@ Return an iterator of the ASDL comments in the given `source` string.
 
 Check whether if the given `node`'s all children lack any fields.
 
-
 ### Examples
+
 Here is a list of example tools that process the given ASDL with `PyASDL`:
+
 - [Typing Stub Generator](./examples/generators/src/typing_stub.py)
 - [Python Class Generator](./examples/generators/src/python.py)
 - [ESDL Generator](./examples/generators/src/edgedb.py)

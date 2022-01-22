@@ -168,7 +168,7 @@ def unmarshal_low_level_versions(node):
 
 
 def unmarshal_top_level_versions(guarded_node):
-    # This code will remove reduntant conditions
+    # This code will remove redundant conditions
     # when the class is already protected by the same
     # condition. E.g:
     # if sys.version <= (3, 7):

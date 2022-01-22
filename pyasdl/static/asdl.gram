@@ -16,7 +16,7 @@ ConstructorList = List[Constructor]
 ProductOrSum = Union[Product, Sum]
 """
 
-start[Module]: 'module' name=NAME NEWLINE? "{" body=definitions "}" {
+start[Module]: "module" name=NAME NEWLINE? "{" body=definitions "}" {
     Module(name.string, body)
 }
 
@@ -45,4 +45,4 @@ field_qualifier[FieldQualifier]:
     | "?" { FieldQualifier.OPTIONAL }
     | "*" { FieldQualifier.SEQUENCE } 
 
-attributes[FieldList]: 'attributes' fields { fields }
+attributes[FieldList]: "attributes" fields { fields }

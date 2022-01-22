@@ -16,9 +16,6 @@ START MIGRATION TO {
             multi link argtypes -> expr;
             required link returns -> expr;
         }
-        type Suite extending mod, AST {
-            multi link body -> stmt;
-        }
         abstract type stmt {}
         type FunctionDef extending stmt, AST {
             required property name -> str;
@@ -98,6 +95,10 @@ START MIGRATION TO {
             multi link items -> withitem;
             multi link body -> stmt;
             property type_comment -> str;
+        }
+        type Match extending stmt, AST {
+            required link subject -> expr;
+            multi link cases -> match_case;
         }
         type PyRaise extending stmt, AST {
             link exc -> expr;
@@ -205,7 +206,7 @@ START MIGRATION TO {
         }
         type FormattedValue extending expr, AST {
             required link value -> expr;
-            property conversion -> int64;
+            required property conversion -> int64;
             link format_spec -> expr;
         }
         type JoinedStr extending expr, AST {
@@ -222,7 +223,7 @@ START MIGRATION TO {
         }
         type Subscript extending expr, AST {
             required link value -> expr;
-            required link slice -> slice;
+            required link slice -> expr;
             required property ctx -> expr_context;
         }
         type Starred extending expr, AST {
@@ -241,19 +242,12 @@ START MIGRATION TO {
             multi link elts -> expr;
             required property ctx -> expr_context;
         }
-        scalar type expr_context extending enum<'Load', 'Store', 'Del', 'AugLoad', 'AugStore', 'Param'> {}
-        abstract type slice {}
-        type Slice extending slice, AST {
+        type Slice extending expr, AST {
             link lower -> expr;
             link upper -> expr;
             link step -> expr;
         }
-        type ExtSlice extending slice, AST {
-            multi link dims -> slice;
-        }
-        type Index extending slice, AST {
-            required link value -> expr;
-        }
+        scalar type expr_context extending enum<'Load', 'Store', 'Del'> {}
         scalar type boolop extending enum<'And', 'Or'> {}
         scalar type operator extending enum<'Add', 'Sub', 'Mult', 'MatMult', 'Div', 'Mod', 'Pow', 'LShift', 'RShift', 'BitOr', 'BitXor', 'BitAnd', 'FloorDiv'> {}
         scalar type unaryop extending enum<'Invert', 'Not', 'UAdd', 'USub'> {}
@@ -296,6 +290,42 @@ START MIGRATION TO {
             required link context_expr -> expr;
             link optional_vars -> expr;
         }
+        type match_case {
+            required link pattern -> pattern;
+            link guard -> expr;
+            multi link body -> stmt;
+        }
+        abstract type pattern {}
+        type MatchValue extending pattern, AST {
+            required link value -> expr;
+        }
+        type MatchSingleton extending pattern, AST {
+            required property value -> str;
+        }
+        type MatchSequence extending pattern, AST {
+            multi link patterns -> pattern;
+        }
+        type MatchMapping extending pattern, AST {
+            multi link keys -> expr;
+            multi link patterns -> pattern;
+            property rest -> str;
+        }
+        type MatchClass extending pattern, AST {
+            required link cls -> expr;
+            multi link patterns -> pattern;
+            multi property kwd_attrs -> str;
+            multi link kwd_patterns -> pattern;
+        }
+        type MatchStar extending pattern, AST {
+            property name -> str;
+        }
+        type MatchAs extending pattern, AST {
+            link pattern -> pattern;
+            property name -> str;
+        }
+        type MatchOr extending pattern, AST {
+            multi link patterns -> pattern;
+        }
         abstract type type_ignore {}
         type TypeIgnore extending type_ignore, AST {
             required property lineno -> int64;
@@ -303,5 +333,3 @@ START MIGRATION TO {
         }
     }
 };
-POPULATE MIGRATION;
-COMMIT MIGRATION;
