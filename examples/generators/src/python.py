@@ -139,11 +139,11 @@ def main():
         )
         stream.write("from __future__ import annotations\n\n")
         stream.write("import typing\n")
-        stream.write("from enum import Enum as _Enum, auto as _auto\n")
         stream.write(
             "from dataclasses import dataclass as _dataclass, field as"
             " _field\n"
         )
+        stream.write("from enum import Enum as _Enum, auto as _auto\n")
         stream.write("identifier = str\n")
         stream.write(
             "string = typing.Union[str, bytes] # Can't use AnyStr before PEP"
