@@ -1,43 +1,28 @@
 # PyASDL
 
-A new ASDL parser for Zephyr's ASDL format.
+A yet another implementation for [Zephyr ASDL](https://www.cs.princeton.edu/~appel/papers/asdl97.pdf) format.
 
-## Stub Generator Example
-For understanding the parse tree and the visitors, you can check out 
-the stub generator example. Basically it generates a typing stub for
-the AST module itself (when the Python's ASDL is given) in a straight
-forward way.
+## API
 
-## Reference
-- `parse(source: str, *, filename: str = "<pyasdl>") -> Module`
-    Takes the source code (and optionally the filename, to be used in
-    syntax errors) and outputs an `pyasdl.Module` instance that
-    represents the AST of the given ASDL schema.
+### `parse(source: str, *, filename: str = "<pyasdl>") -> Module`
 
-- `ASDLVisitor`
-    A base class to be used with `visitor-pattern` applications. The
-    interface is similiar with the `ast.NodeVisitor`.
-    
-    ```py
-    import pyasdl as asdl
+Parse the given `source` string, and return the AST in the shape of an `pyasdl.Module`. The
+full format is defined in the [`grammar.asdl`](./pyasdl/static/grammar.asdl) file. The `filename`
+can be optionally supplied, and will be displayed if there is any syntax error.
 
-    class CollectNamesVisitor(asdl.ASDLVisitor):
-        def __init__(self):
-            self.names = set()
+### `fetch_comments(source: str) -> Iterator[str]:`
 
-        def visit_Module(self, node: asdl.Module) -> None:
-            self.names.add(node.name)
+Return an iterator of the ASDL comments in the given `source` string.
 
-    visitor = DummyVisitor()
-    for source in sources:
-        tree = asdl.parse(source)
-        visitor.visit(tree)
-    print(visitor.names)
-    ```
+### `is_simple_sum(node: Sum) -> bool:`
 
-- `Module`
-- `Type`
-- `Sum`
-- `Constructor`
-- `FieldQualifier`
-- `Field`
+Check whether if the given `node`'s all children lack any fields.
+
+### Examples
+
+Here is a list of example tools that process the given ASDL with `PyASDL`:
+
+- [Typing Stub Generator](./examples/generators/src/typing_stub.py)
+- [Python Class Generator](./examples/generators/src/python.py)
+- [ESDL Generator](./examples/generators/src/edgedb.py)
+- [GraphQL Converter](./examples/generators/src/graphql.py)

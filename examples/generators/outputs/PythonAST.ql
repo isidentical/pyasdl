@@ -13,7 +13,7 @@ type FunctionType {
   argtypes: [expr]
   returns: expr!
 }
-union stmt = FunctionDef | AsyncFunctionDef | ClassDef | Return | Delete | Assign | AugAssign | AnnAssign | For | AsyncFor | While | If | With | AsyncWith | Raise | Try | Assert | Import | ImportFrom | Global | Nonlocal | Expr | Pass | Break | Continue
+union stmt = FunctionDef | AsyncFunctionDef | ClassDef | Return | Delete | Assign | AugAssign | AnnAssign | For | AsyncFor | While | If | With | AsyncWith | Match | Raise | Try | Assert | Import | ImportFrom | Global | Nonlocal | Expr | Pass | Break | Continue
 type FunctionDef {
   name: identifier!
   args: arguments!
@@ -92,6 +92,10 @@ type AsyncWith {
   items: [withitem]
   body: [stmt]
   type_comment: string
+}
+type Match {
+  subject: expr!
+  cases: [match_case]
 }
 type Raise {
   exc: expr
@@ -202,7 +206,7 @@ type Call {
 }
 type FormattedValue {
   value: expr!
-  conversion: int
+  conversion: int!
   format_spec: expr
 }
 type JoinedStr {
@@ -322,6 +326,42 @@ type alias {
 type withitem {
   context_expr: expr!
   optional_vars: expr
+}
+type match_case {
+  pattern: pattern!
+  guard: expr
+  body: [stmt]
+}
+union pattern = MatchValue | MatchSingleton | MatchSequence | MatchMapping | MatchClass | MatchStar | MatchAs | MatchOr
+type MatchValue {
+  value: expr!
+}
+type MatchSingleton {
+  value: constant!
+}
+type MatchSequence {
+  patterns: [pattern]
+}
+type MatchMapping {
+  keys: [expr]
+  patterns: [pattern]
+  rest: identifier
+}
+type MatchClass {
+  cls: expr!
+  patterns: [pattern]
+  kwd_attrs: [identifier]
+  kwd_patterns: [pattern]
+}
+type MatchStar {
+  name: identifier
+}
+type MatchAs {
+  pattern: pattern
+  name: identifier
+}
+type MatchOr {
+  patterns: [pattern]
 }
 union type_ignore = TypeIgnore
 type TypeIgnore {

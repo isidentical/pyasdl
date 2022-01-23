@@ -256,8 +256,11 @@ if sys.version_info <= (3, 7):
 
 class FormattedValue(expr):
     value: expr
-    conversion: typing.Optional[int]
+    if sys.version_info <= (3, 9):
+        conversion: typing.Optional[int]
     format_spec: typing.Optional[expr]
+    if sys.version_info >= (3, 10):
+        conversion: int
 
 class JoinedStr(expr):
     values: typing.List[expr]

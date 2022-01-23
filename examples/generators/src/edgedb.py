@@ -113,14 +113,6 @@ class QLModel:
         return "\n".join(lines)
 
 
-def is_simple(sum_t: pyasdl.Sum) -> bool:
-    for constructor in sum_t.types:
-        if constructor.fields is not None:
-            return False
-    else:
-        return True
-
-
 def as_enum(names):
     return "enum" + "<" + ", ".join(repr(name) for name in names) + ">"
 
@@ -150,7 +142,7 @@ class GraphQLGenerator(pyasdl.ASDLVisitor):
 
     def visit_Sum(self, node, name):
         constructor_names = [constructor.name for constructor in node.types]
-        if is_simple(node):
+        if pyasdl.is_simple_sum(node):
             self.enums.add(name)
             yield QLModel(
                 name,
