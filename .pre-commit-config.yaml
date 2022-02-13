@@ -6,10 +6,9 @@ default_language_version:
 
 repos:
 -   repo: https://github.com/psf/black
-    rev: 21.12b0
+    rev: 22.1.0
     hooks:
     -   id: black
-        args: [--experimental-string-processing]
 -   repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
     hooks:
@@ -28,7 +27,7 @@ repos:
          -   --disable-error-code
          -   attr-defined
 -   repo: https://github.com/hakancelik96/unimport
-    rev: 0.9.2
+    rev: 0.9.4
     hooks:
       - id: unimport
         args:
