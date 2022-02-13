@@ -251,6 +251,7 @@ class Call(expr):
 if sys.version_info <= (3, 7):
     class Num(expr):
         n: object
+
     class Str(expr):
         s: string
 
@@ -268,8 +269,10 @@ class JoinedStr(expr):
 if sys.version_info <= (3, 7):
     class Bytes(expr):
         s: bytes
+
     class NameConstant(expr):
         value: singleton
+
     class Ellipsis(expr): ...
 
 class Constant(expr):
@@ -330,6 +333,7 @@ class Slice(_SliceBase):
 if sys.version_info <= (3, 8):
     class ExtSlice(slice):
         dims: typing.List[slice]
+
     class Index(slice):
         value: expr
 
@@ -431,10 +435,13 @@ if sys.version_info >= (3, 8):
     class FunctionType(mod):
         argtypes: typing.List[expr]
         returns: expr
+
     class NamedExpr(expr):
         target: expr
         value: expr
+
     class type_ignore(AST): ...
+
     class TypeIgnore(type_ignore):
         lineno: int
         tag: string
@@ -443,34 +450,44 @@ if sys.version_info >= (3, 10):
     class Match(stmt):
         subject: expr
         cases: typing.List[match_case]
+
     class match_case(AST):
         pattern: pattern
         guard: typing.Optional[expr]
         body: typing.List[stmt]
+
     class pattern(AST):
         lineno: int
         col_offset: int
         end_lineno: int
         end_col_offset: int
+
     class MatchValue(pattern):
         value: expr
+
     class MatchSingleton(pattern):
         value: constant
+
     class MatchSequence(pattern):
         patterns: typing.List[pattern]
+
     class MatchMapping(pattern):
         keys: typing.List[expr]
         patterns: typing.List[pattern]
         rest: typing.Optional[identifier]
+
     class MatchClass(pattern):
         cls: expr
         patterns: typing.List[pattern]
         kwd_attrs: typing.List[identifier]
         kwd_patterns: typing.List[pattern]
+
     class MatchStar(pattern):
         name: typing.Optional[identifier]
+
     class MatchAs(pattern):
         pattern: typing.Optional[pattern]
         name: typing.Optional[identifier]
+
     class MatchOr(pattern):
         patterns: typing.List[pattern]
