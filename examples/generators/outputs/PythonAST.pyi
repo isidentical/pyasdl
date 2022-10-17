@@ -6,6 +6,7 @@ class AST:
     _attributes: typing.ClassVar[typing.Tuple[str, ...]]
     _fields: typing.ClassVar[typing.Tuple[str, ...]]
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None: ...
+
     # Allow any attribute access (taken from types.SingleNamespace)
     def __getattribute__(self, name: str) -> Any: ...
     def __setattr__(self, name: str, value: Any) -> None: ...
@@ -491,3 +492,10 @@ if sys.version_info >= (3, 10):
 
     class MatchOr(pattern):
         patterns: typing.List[pattern]
+
+if sys.version_info >= (3, 11):
+    class TryStar(stmt):
+        body: typing.List[stmt]
+        handlers: typing.List[excepthandler]
+        orelse: typing.List[stmt]
+        finalbody: typing.List[stmt]

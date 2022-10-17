@@ -13,7 +13,7 @@ type FunctionType {
   argtypes: [expr]
   returns: expr!
 }
-union stmt = FunctionDef | AsyncFunctionDef | ClassDef | Return | Delete | Assign | AugAssign | AnnAssign | For | AsyncFor | While | If | With | AsyncWith | Match | Raise | Try | Assert | Import | ImportFrom | Global | Nonlocal | Expr | Pass | Break | Continue
+union stmt = FunctionDef | AsyncFunctionDef | ClassDef | Return | Delete | Assign | AugAssign | AnnAssign | For | AsyncFor | While | If | With | AsyncWith | Match | Raise | Try | TryStar | Assert | Import | ImportFrom | Global | Nonlocal | Expr | Pass | Break | Continue
 type FunctionDef {
   name: identifier!
   args: arguments!
@@ -102,6 +102,12 @@ type Raise {
   cause: expr
 }
 type Try {
+  body: [stmt]
+  handlers: [excepthandler]
+  orelse: [stmt]
+  finalbody: [stmt]
+}
+type TryStar {
   body: [stmt]
   handlers: [excepthandler]
   orelse: [stmt]

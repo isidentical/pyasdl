@@ -110,6 +110,12 @@ START MIGRATION TO {
             multi link orelse -> stmt;
             multi link finalbody -> stmt;
         }
+        type TryStar extending stmt, AST {
+            multi link body -> stmt;
+            multi link handlers -> excepthandler;
+            multi link orelse -> stmt;
+            multi link finalbody -> stmt;
+        }
         type Assert extending stmt, AST {
             required link test -> expr;
             link msg -> expr;
