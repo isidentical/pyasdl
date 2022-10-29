@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ast
 import textwrap
 from argparse import ArgumentParser
@@ -27,9 +29,7 @@ class StubGenerator(pyasdl.ASDLVisitor):
         )
 
     def visit_Sum(self, node, name, attributes):
-        self._create_type(
-            name, base=_BASE_CLASS, fields=attributes or _EMPTY_BODY
-        )
+        self._create_type(name, base=_BASE_CLASS, fields=attributes or _EMPTY_BODY)
 
         for constructor in node.types:
             if constructor.fields:
@@ -55,9 +55,7 @@ class StubGenerator(pyasdl.ASDLVisitor):
             elif node.qualifier is pyasdl.FieldQualifier.OPTIONAL:
                 qualifier = "Optional"
             else:
-                raise ValueError(
-                    f"Unexpected field qualifier: {node.qualifier}"
-                )
+                raise ValueError(f"Unexpected field qualifier: {node.qualifier}")
 
             annotation = ast.Subscript(
                 value=ast.Attribute(_TYPING, qualifier, ast.Load()),
@@ -106,15 +104,11 @@ def with_guard(node, lowest, highest):
     if lowest is None:
         # sys.version_info <= highest
         assert highest is not None
-        condition = ast.Compare(
-            _SYS_VERSION, [ast.LtE()], [ast.Constant(highest)]
-        )
+        condition = ast.Compare(_SYS_VERSION, [ast.LtE()], [ast.Constant(highest)])
     elif highest is None:
         # sys.version_info >= highest
         assert lowest is not None
-        condition = ast.Compare(
-            _SYS_VERSION, [ast.GtE()], [ast.Constant(lowest)]
-        )
+        condition = ast.Compare(_SYS_VERSION, [ast.GtE()], [ast.Constant(lowest)])
     else:
         # lowest <= sys.version_info <= highest
         condition = ast.Compare(
@@ -234,12 +228,8 @@ def generate_stubs(asdls):
             base_name = ast.Name(f"_{name}Base", ast.Store())
             base_switch = top_level_switch = None
             for base, base_versions in all_stub_bases.items():
-                base_assign = ast.Assign(
-                    [base_name], ast.Name(base, ast.Load())
-                )
-                guarded_base_assign = _guard_generator(
-                    base_assign, base_versions
-                )
+                base_assign = ast.Assign([base_name], ast.Name(base, ast.Load()))
+                guarded_base_assign = _guard_generator(base_assign, base_versions)
                 if base_switch is None:
                     base_switch = top_level_switch = guarded_base_assign
                 else:

@@ -1,22 +1,23 @@
 # PyASDL
 
-A yet another implementation for [Zephyr ASDL](https://www.cs.princeton.edu/~appel/papers/asdl97.pdf) format.
+A pure Python implementation of the [Zephyr ASDL](https://www.cs.princeton.edu/~appel/papers/asdl97.pdf) format.
 
 ## API
 
-### `parse(source: str, *, filename: str = "<pyasdl>") -> Module`
+### `parse(source, *, filename = ...) -> Module`
 
 Parse the given `source` string, and return the AST in the shape of an `pyasdl.Module`. The
 full format is defined in the [`grammar.asdl`](./pyasdl/static/grammar.asdl) file. The `filename`
-can be optionally supplied, and will be displayed if there is any syntax error.
+can be optionally supplied, and will be used if any syntax errors found during the parsing process.
 
-### `fetch_comments(source: str) -> Iterator[str]:`
+### `fetch_comments(source) -> Iterator[str]`
 
-Return an iterator of the ASDL comments in the given `source` string.
+Iterate over all the comments (in the shape of `-- comment`) in the given ASDL source string.
 
-### `is_simple_sum(node: Sum) -> bool:`
+### `is_simple_sum(node) -> bool`
 
-Check whether if the given `node`'s all children lack any fields.
+Check whether if the given `node` is an enum (or simple sum) (e.g. a sum where none
+of the members has constructor fields).
 
 ### Examples
 
