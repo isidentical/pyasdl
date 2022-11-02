@@ -1,4 +1,5 @@
-import ast
+from __future__ import annotations
+
 import subprocess
 import sys
 from pathlib import Path
@@ -81,57 +82,44 @@ def test_asdl_generation():
     assert parsed_ast == expected_ast
 
 
-regular_equality = lambda result, original: result == original
-
-
-def ast_based_equality(result, original):
-    def nuke_imports(tree):
-        # isort changes the AST (re-orders imports), so
-        # for a better equalivance we'll remove all
-        # imports.
-
-        for node in tree.body.copy():
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                tree.body.remove(node)
-
-    tree_1, tree_2 = ast.parse(result), ast.parse(original)
-    nuke_imports(tree_1)
-    nuke_imports(tree_2)
-    return ast.dump(tree_1, indent=4) == ast.dump(tree_2, indent=4)
-
-
 @pytest.mark.parametrize(
-    "generator, original_file, args, equality_func",
+    "generator, original_file, args",
     [
         (
             GENERATORS_DIR / "src" / "edgedb.py",
             GENERATORS_DIR / "outputs" / "PythonAST.edgeql",
             [LATEST_ASDL],
-            regular_equality,
         ),
         (
             GENERATORS_DIR / "src" / "graphql.py",
             GENERATORS_DIR / "outputs" / "PythonAST.ql",
             [LATEST_ASDL],
-            regular_equality,
         ),
         (
             GENERATORS_DIR / "src" / "python.py",
             GENERATORS_DIR / "outputs" / "PythonAST.py",
             [LATEST_ASDL],
-            ast_based_equality,
         ),
         (
             GENERATORS_DIR / "src" / "typing_stub.py",
             GENERATORS_DIR / "outputs" / "PythonAST.pyi",
             ALL_ASDLS.values(),
-            ast_based_equality,
         ),
     ],
 )
-def test_generators(generator, original_file, args, equality_func):
-    original = original_file.read_text()
-    result = subprocess.check_output(
-        [sys.executable, generator, *args], text=True
+def test_generators(tmp_path, generator, original_file, args):
+    result = subprocess.check_output([sys.executable, generator, *args], text=True)
+
+    result_file = (tmp_path / "result").with_suffix(original_file.suffix)
+    result_file.write_text(result)
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pre_commit",
+            "run",
+            "--files",
+            result_file,
+        ]
     )
-    assert equality_func(original, result)
+    assert original_file.read_text() == result_file.read_text()

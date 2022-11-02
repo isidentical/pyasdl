@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import argparse
 import io
 import tokenize as _tokenize
-from typing import Iterator
+from collections.abc import Iterator
 
 from pegen.tokenizer import Tokenizer
 

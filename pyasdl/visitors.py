@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, cast
+from typing import Any, cast
 
 from pyasdl.grammar import AST
 
@@ -15,7 +15,7 @@ class ASDLVisitor:
         visitor = self.find_visitor(type(node).__name__)
         return visitor(node, *args, **kwargs)
 
-    def visit_all(self, nodes: List[AST], *args, **kwags) -> List[Any]:
+    def visit_all(self, nodes: list[AST], *args, **kwags) -> list[Any]:
         return [self.visit(node, *args, **kwags) for node in nodes]
 
     def generic_visit(self, node: AST, *args, **kwags) -> AST:

@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import List, Optional
 
 import pyasdl
 
@@ -22,7 +23,7 @@ class Constraint(Enum):
 @dataclass
 class QLUnion:
     name: str
-    models: List[str]
+    models: list[str]
 
     def __str__(self):
         return f"union {self.name} = " + " | ".join(self.models)
@@ -31,7 +32,7 @@ class QLUnion:
 @dataclass
 class QLEnum:
     name: str
-    values: List[str]
+    values: list[str]
 
     def __str__(self):
         lines = []
@@ -45,7 +46,7 @@ class QLEnum:
 class QLField:
     name: str
     qualifier: str
-    constraint: Optional[Constraint] = None
+    constraint: Constraint | None = None
 
     @property
     def type(self):
@@ -61,7 +62,7 @@ class QLField:
 @dataclass
 class QLModel:
     name: str
-    fields: List[QLField]
+    fields: list[QLField]
 
     def __str__(self):
         lines = []

@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import textwrap
 from argparse import ArgumentParser
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
 
 import pyasdl
 
@@ -57,8 +58,8 @@ def protected_name(name):
 class QLField:
     name: str
     qualifier: str
-    constraint: Optional[FieldConstraint]
-    is_property: Optional[bool] = None
+    constraint: FieldConstraint | None
+    is_property: bool | None = None
 
     def __post_init__(self):
         if self.is_property is None:
@@ -90,9 +91,9 @@ class QLField:
 @dataclass
 class QLModel:
     name: str
-    fields: List[QLField] = field(default_factory=list)
-    extending: Optional[str] = None
-    constraint: Optional[ModelConstraint] = None
+    fields: list[QLField] = field(default_factory=list)
+    extending: str | None = None
+    constraint: ModelConstraint | None = None
 
     def __str__(self):
         lines = []
@@ -147,9 +148,7 @@ class GraphQLGenerator(pyasdl.ASDLVisitor):
             yield QLModel(
                 name,
                 constraint=ModelConstraint.SCALAR,
-                extending=as_enum(
-                    constructor.name for constructor in node.types
-                ),
+                extending=as_enum(constructor.name for constructor in node.types),
             )
         else:
             yield QLModel(name, constraint=ModelConstraint.ABSTRACT)
